@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Интерактивный курс «Компьютерные сети» — теория, лабораторные работы, тесты и симулятор Cisco IOS">
+<title>Компьютерные сети — интерактивный курс</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== Боковое меню ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <a href="#/" class="brand">
+        <span class="brand-icon">🌐</span>
+        <span class="brand-text">Компьютерные<br>сети</span>
+      </a>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Закрыть меню">✕</button>
+    </div>
+    <nav class="nav" id="nav"><!-- заполняется app.js --></nav>
+    <div class="sidebar-foot">
+      <button class="theme-toggle" id="themeToggle">
+        <span class="theme-icon">🌙</span><span class="theme-label">Тёмная тема</span>
+      </button>
+    </div>
+  </aside>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ===== Основная область ===== -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger" aria-label="Меню">☰</button>
+      <div class="search-box">
+        <input type="search" id="searchInput" placeholder="Поиск по курсу…" autocomplete="off">
+        <div class="search-results" id="searchResults" hidden></div>
+      </div>
+      <div class="topbar-progress" id="topbarProgress" title="Общий прогресс"></div>
+    </header>
+
+    <main class="content" id="content" tabindex="-1">
+      <!-- страницы рендерятся сюда -->
+    </main>
+
+    <footer class="footer">
+      <span>Интерактивный курс по компьютерным сетям</span>
+      <span class="footer-sep">·</span>
+      <a href="#/about">О проекте</a>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== Скрипты (обычные, без ES-модулей — работает и через file:// и на хостинге) ===== -->
+<script src="assets/js/widgets/progress.js"></script>
+<script src="assets/js/renderer.js"></script>
+<script src="assets/js/widgets/quiz.js"></script>
+<script src="assets/js/widgets/flashcards.js"></script>
+<script src="assets/js/widgets/osi.js"></script>
+<script src="assets/js/widgets/ios-cli.js"></script>
+<script src="content/registry.js"></script>
+<script src="content/theory.js"></script>
+<script src="content/cheatsheet.js"></script>
+<script src="content/questions.js"></script>
+<script src="content/labs/lab1/meta.js"></script>
+<script src="content/labs/lab1/theory.js"></script>
+<script src="content/labs/lab1/tasks.js"></script>
+<script src="content/labs/lab1/quiz.js"></script>
+<script src="content/labs/lab1/flashcards.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
