@@ -8,18 +8,27 @@
       return wrap;
     }
 
-    var state = { i: 0, answered: 0, correct: 0 };
+    var state = { i: 0, answered: 0, correct: 0, wrong: [], isRetry: false, fullTotal: quiz.length };
     var head = Renderer.el('<div class="quiz-head"></div>');
     var qBox = Renderer.el('<div class="quiz-body"></div>');
     var foot = Renderer.el('<div class="quiz-foot"></div>');
     wrap.appendChild(head); wrap.appendChild(qBox); wrap.appendChild(foot);
 
+    function resetState(isRetry, fullTotal) {
+      state = {
+        i: 0, answered: 0, correct: 0, wrong: [],
+        isRetry: !!isRetry,
+        fullTotal: fullTotal || quiz.length
+      };
+    }
+
     function renderHead() {
       head.innerHTML = "";
       var best = Progress.quizBest(quizId);
-      var pct = quiz.length ? Math.round(state.correct / quiz.length * 100) : 0;
+      var total = state.isRetry ? quiz.length : state.fullTotal;
+      var pct = total ? Math.round(state.correct / total * 100) : 0;
       head.appendChild(Renderer.el(
-        '<div class="quiz-meta"><span>Вопрос ' + (state.i + 1) + " из " + quiz.length + "</span>" +
+        '<div class="quiz-meta"><span>Вопрос ' + (state.i + 1) + " из " + quiz.length + (state.isRetry ? " (повтор ошибок)" : "") + "</span>" +
         '<span class="quiz-score">Верно: ' + state.correct + "</span>" +
         (best ? '<span class="quiz-best">Лучший: ' + best.score + "/" + best.total + "</span>" : "") +
         "</div>"
@@ -44,6 +53,7 @@
           state.answered++;
           var right = oi === q.correct;
           if (right) state.correct++;
+          else state.wrong.push({ qi: state.i, chosen: oi });
           opts.querySelectorAll(".quiz-opt").forEach(function (b, bi) {
             b.disabled = true;
             if (bi === q.correct) b.classList.add("right");
@@ -69,26 +79,68 @@
     }
 
     function renderResult() {
-      var pct = Math.round(state.correct / quiz.length * 100);
-      Progress.quizSave(quizId, state.correct, quiz.length);
+      var total = state.isRetry ? quiz.length : state.fullTotal;
+      var pct = total ? Math.round(state.correct / total * 100) : 0;
+      /* лучший результат — только для полного теста */
+      if (!state.isRetry) Progress.quizSave(quizId, state.correct, total);
       var msg = pct >= 90 ? "Отличный результат! 🎉" : pct >= 70 ? "Хорошо, но можно лучше 👍" : "Стоит повторить материал 📚";
       qBox.innerHTML = "";
+
       var card = Renderer.el(
         '<div class="quiz-card quiz-result">' +
-        '<div class="qr-num">' + state.correct + " / " + quiz.length + "</div>" +
+        '<div class="qr-num">' + state.correct + " / " + total + "</div>" +
         '<div class="qr-pct">' + pct + "%</div>" +
-        '<div class="qr-msg">' + msg + "</div>" +
-        '<div class="quiz-nav"><button class="btn btn-primary">Пройти заново</button></div>' +
+        '<div class="qr-msg">' + msg + (state.isRetry ? " (повтор ошибок)" : "") + "</div>" +
         "</div>"
       );
-      card.querySelector("button").addEventListener("click", function () {
-        state = { i: 0, answered: 0, correct: 0 };
-        renderHead(); renderQ();
-      });
+
+      /* список ошибок с разбором */
+      if (state.wrong.length) {
+        var list = Renderer.el('<div class="quiz-wrong"><div class="qw-title">Ошибки (' + state.wrong.length + ")</div></div>");
+        state.wrong.forEach(function (w) {
+          var q = quiz[w.qi];
+          var chosen = (q.options || [])[w.chosen];
+          var rightOpt = (q.options || [])[q.correct];
+          list.appendChild(Renderer.el(
+            '<div class="qw-item">' +
+            '<div class="qw-q">' + Renderer.inline(q.q) + "</div>" +
+            '<div class="qw-your">Ваш ответ: <s>' + Renderer.inline(chosen || "?") + "</s></div>" +
+            '<div class="qw-right">Верно: <b>' + Renderer.inline(rightOpt || "?") + "</b></div>" +
+            (q.explain ? '<div class="qw-ex">' + Renderer.inline(q.explain) + "</div>" : "") +
+            "</div>"
+          ));
+        });
+        card.appendChild(list);
+      }
+
+      var nav = Renderer.el('<div class="quiz-nav" style="justify-content:center"></div>');
+      if (state.wrong.length) {
+        var retryWrong = Renderer.el('<button class="btn">Повторить ошибки (' + state.wrong.length + ")</button>");
+        retryWrong.addEventListener("click", function () {
+          var wrongIdx = state.wrong.map(function (w) { return w.qi; });
+          var subset = wrongIdx.map(function (i) { return quiz[i]; });
+          startRound(subset, true, total);
+        });
+        nav.appendChild(retryWrong);
+      }
+      var again = Renderer.el('<button class="btn btn-primary">Пройти заново</button>');
+      again.addEventListener("click", function () { startRound(fullQuiz.slice(), false, fullQuiz.length); });
+      nav.appendChild(again);
+      card.appendChild(nav);
+
       qBox.appendChild(card);
       renderHead();
     }
 
+    /* запуск раунда: весь тест или только подмножество (повтор ошибок) */
+    function startRound(roundQuiz, isRetry, fullTotal) {
+      quiz = roundQuiz;
+      resetState(isRetry, fullTotal);
+      renderHead();
+      renderQ();
+    }
+
+    var fullQuiz = quiz.slice();
     renderHead(); renderQ();
     return wrap;
   }

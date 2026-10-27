@@ -178,7 +178,26 @@ body {
   font-weight: 700;
 }
 
-.sidebar-foot { padding: 12px; border-top: 1px solid var(--border); }
+.sidebar-foot { padding: 12px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+
+.progress-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+.foot-btn {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  border-radius: var(--radius-sm);
+  padding: 7px 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background .14s, color .14s;
+  white-space: nowrap;
+}
+.foot-btn:hover { background: var(--card-2); color: var(--text); }
+.foot-btn.foot-danger:hover { background: var(--err-soft); color: var(--err); border-color: var(--err); }
 
 .theme-toggle {
   display: flex;

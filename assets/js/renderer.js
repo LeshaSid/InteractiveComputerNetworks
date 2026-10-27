@@ -78,7 +78,7 @@ window.Renderer = (function () {
 
       case "img": {
         var img = '<div class="blk-img' + (b.wide ? " wide" : "") + '">' +
-          '<span class="frame"><img src="' + esc(b.src) + '" alt="' + esc(b.caption || "рисунок") + '">' +
+          '<span class="frame"><img src="' + esc(b.src) + '" alt="' + esc(b.caption || "рисунок") + '" loading="lazy" decoding="async">' +
           "</span>" +
           (b.caption ? '<span class="cap">' + inline(b.caption) + "</span>" : "") +
           "</div>";
@@ -192,6 +192,10 @@ window.Renderer = (function () {
         return widgets.osi ? widgets.osi.render() : null;
       case "cli":
         return widgets.cli ? widgets.cli.render(b.device) : null;
+      case "pinout":
+        return widgets.pinout ? widgets.pinout.render() : null;
+      case "pt":
+        return widgets.pt ? widgets.pt.render(b) : null;
 
       default:
         console.warn("Renderer: неизвестный тип блока:", t);

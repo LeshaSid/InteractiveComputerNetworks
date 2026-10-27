@@ -8,7 +8,7 @@ window.Search = (function () {
 
   function add(title, path, text) {
     if (!text) return;
-    index.push({ title: title, path: path, text: strip(text).slice(0, 500), lower: (title + " " + strip(text)).toLowerCase() });
+    index.push({ title: title, path: path, text: strip(text).slice(0, 800), lower: (title + " " + strip(text)).toLowerCase() });
   }
 
   function build() {
@@ -60,6 +60,32 @@ window.Search = (function () {
 
     (S.cheatsheet || []).forEach(function (g) {
       add("Шпаргалка: " + g.title, "#/cheatsheet", g.rows.map(function (r) { return r.join(" "); }).join(" "));
+    });
+
+    /* флеш-карточки */
+    Object.keys(S.decks || {}).forEach(function (deckId) {
+      var deck = S.decks[deckId] || [];
+      deck.forEach(function (c, i) {
+        var labPath = "#/lab/" + deckId.replace(/-cards$/, "") + "/flashcards";
+        add(c.term, labPath, c.def);
+      });
+      if (deck.length) {
+        add("Флеш-карточки: " + deckId, deckId.indexOf("lab") === 0
+          ? "#/lab/" + deckId.replace(/-cards$/, "") + "/flashcards"
+          : "#/",
+          deck.map(function (c) { return c.term + " " + c.def; }).join(" "));
+      }
+    });
+
+    /* вопросы квизов */
+    Object.keys(S.quizzes || {}).forEach(function (quizId) {
+      var quiz = S.quizzes[quizId] || [];
+      quiz.forEach(function (q) {
+        var path = quizId.indexOf("lab") === 0
+          ? "#/lab/" + quizId.replace(/-quiz$/, "") + "/quiz"
+          : "#/";
+        add(q.q, path, (q.options || []).join(" ") + " " + (q.explain || ""));
+      });
     });
 
     return index.length;

@@ -10,7 +10,7 @@
       enablePrompt: "S1#",
       mode: "user", /* user | enable | config */
       saved: false,
-      configs: { hostname: "S1", consolePass: null, enablePass: null, enableSecret: null, banner: null, encrypt: false },
+      configs: { hostname: "S1", consolePass: null, vtyPass: null, enablePass: null, enableSecret: null, banner: null, encrypt: false },
       macTable: [
         { mac: "00E0.F9DC.1A2B", port: "Fa0/1", type: "DYNAMIC" },
         { mac: "00E0.F9DC.7C3D", port: "Fa0/2", type: "DYNAMIC" },
@@ -245,16 +245,32 @@
         updPrompt(); return;
       }
       if (cmd === "line") {
-        if ((rest[0] || "").toLowerCase() === "console" && rest[1] === "0") {
+        var ln = (rest[0] || "").toLowerCase();
+        if (ln === "console" && rest[1] === "0") {
           dev._ctx = "console";
           print("Entering configuration line mode — введите: password <пароль>, затем login, затем exit");
           return;
         }
-        print("% Unsupported line: line console 0 only (в симуляторе)"); return;
+        if (ln === "vty") {
+          dev._ctx = "vty";
+          print("Entering line vty mode (0 4) — password / login / transport input ssh|telnet / exit");
+          return;
+        }
+        print("% Unsupported line: line console 0 | line vty 0 4 (в симуляторе)"); return;
       }
-      if (dev._ctx === "console") {
-        if (cmd === "password") { dev.configs.consolePass = rest[0] || null; print("Сохранено: пароль консоли = " + rest[0]); return; }
-        if (cmd === "login") { print("Login check enabled"); return; }
+      if (dev._ctx === "console" || dev._ctx === "vty") {
+        var ctxName = dev._ctx;
+        if (cmd === "password") {
+          if (ctxName === "console") dev.configs.consolePass = rest[0] || null;
+          else dev.configs.vtyPass = rest[0] || null;
+          print("Сохранено: пароль " + ctxName + " = " + rest[0]);
+          return;
+        }
+        if (cmd === "login") { print("Login check enabled (" + ctxName + ")"); return; }
+        if (cmd === "transport") {
+          print("transport input " + (rest[1] || "?") + " — сохранено (упрощённо)");
+          return;
+        }
         if (cmd === "exit") { dev._ctx = null; updPrompt(); return; }
       }
       if (cmd === "enable") {

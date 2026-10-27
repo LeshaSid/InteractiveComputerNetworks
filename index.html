@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Интерактивный курс «Компьютерные сети» — теория, лабораторные работы, тесты и симулятор Cisco IOS">
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta property="og:title" content="Компьютерные сети — интерактивный курс">
+<meta property="og:description" content="Теория, лабораторные, тесты, симуляторы Cisco IOS и Packet Tracer прямо в браузере">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.json">
 <title>Компьютерные сети — интерактивный курс</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
 <link rel="stylesheet" href="assets/css/main.css">
@@ -24,6 +30,12 @@
     </div>
     <nav class="nav" id="nav"><!-- заполняется app.js --></nav>
     <div class="sidebar-foot">
+      <div class="progress-actions">
+        <button class="foot-btn" id="btnExport" title="Скачать прогресс файлом">💾 Экспорт</button>
+        <button class="foot-btn" id="btnImport" title="Загрузить прогресс из файла">📂 Импорт</button>
+        <button class="foot-btn foot-danger" id="btnReset" title="Сбросить весь прогресс">🗑 Сброс</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
       <button class="theme-toggle" id="themeToggle">
         <span class="theme-icon">🌙</span><span class="theme-label">Тёмная тема</span>
       </button>
@@ -36,7 +48,7 @@
     <header class="topbar">
       <button class="burger" id="burger" aria-label="Меню">☰</button>
       <div class="search-box">
-        <input type="search" id="searchInput" placeholder="Поиск по курсу…" autocomplete="off">
+        <input type="search" id="searchInput" placeholder="Поиск по курсу… (Ctrl+K)" autocomplete="off">
         <div class="search-results" id="searchResults" hidden></div>
       </div>
       <div class="topbar-progress" id="topbarProgress" title="Общий прогресс"></div>
@@ -61,6 +73,10 @@
 <script src="assets/js/widgets/flashcards.js"></script>
 <script src="assets/js/widgets/osi.js"></script>
 <script src="assets/js/widgets/ios-cli.js"></script>
+<script src="assets/js/widgets/pinout.js"></script>
+<script src="assets/js/pt/core.js"></script>
+<script src="assets/js/pt/engine.js"></script>
+<script src="assets/js/pt/ui.js"></script>
 <script src="content/registry.js"></script>
 <script src="content/theory.js"></script>
 <script src="content/cheatsheet.js"></script>
@@ -72,5 +88,13 @@
 <script src="content/labs/lab1/flashcards.js"></script>
 <script src="assets/js/search.js"></script>
 <script src="assets/js/app.js"></script>
+<script>
+/* PWA: регистрируем SW только по http(s), не через file:// */
+if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
+</script>
 </body>
 </html>

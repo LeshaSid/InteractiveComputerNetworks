@@ -10,6 +10,7 @@ window.Site.labTasks.lab1 = [
     intro: "Знакомство с интерфейсом Packet Tracer, режимами Realtime/Simulation, логическим и физическим представлением сети, а также компонентами LAN, WAN и Интернет в учебной топологии.",
     blocks: [
       { type: "h2", text: "Часть 1. Обзор программы Packet Tracer" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_1-img6.jpg", wide: true, caption: "Интерфейс Packet Tracer: логическая рабочая область, панель инструментов, режимы Realtime/Simulation (из отчёта)" },
       { type: "p", text: "Доступ к справке: знак **?** в правом верхнем углу или меню **Help → Contents**. Учебные видеоролики — **Help → Tutorials** (Interface Overview, Simulation Environment)." },
       { type: "qa", q: "В окне «IP Configuration» (Desktop → IP Configuration) что можно настроить?", a: "Настройки DHCP/Static: IP-адрес, маска подсети, шлюз по умолчанию, DNS-сервер; при DHCP — автоматическое получение параметров." },
       { type: "img", src: "assets/img/lab1/reports/lab1_1-img1.jpg", caption: "Окно IP Configuration в Packet Tracer (пример из отчёта)" },
@@ -19,12 +20,15 @@ window.Site.labTasks.lab1 = [
       { type: "qa", q: "Что является заголовками основных разделов на вкладках Inbound/Outbound PDU Details?", a: "Разделы соответствуют заголовкам протоколов, через которые проходит пакет: **Ethernet II** (кадр L2), **IP** (пакет L3), **OSPF Hello** (пакет L3 маршрутизационного протокола)." },
       { type: "qa", q: "Изменились ли данные между Inbound и Outbound PDU Details? Если да — как?", a: "Да. В **Outbound PDU Details добавилось внизу** — при выходе пакета из устройства к нему добавляется/обновляется служебная информация (например, новый Ethernet-заголовок с MAC-адресом следующего hop'а на выходном интерфейсе)." },
       { type: "img", src: "assets/img/lab1/reports/lab1_1-img2.jpg", caption: "PDU Information — OSI Model и детали PDU (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_1-img3.jpg", caption: "Inbound/Outbound PDU Details: заголовки Ethernet II → IP → OSPF (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_1-img4.jpg", caption: "Содержимое конвертика на промежуточном устройстве: OSPF Hello, NEIGHBOR 64.100.200.2 (из отчёта)" },
       { type: "h3", text: "Logical и Physical" },
       { type: "p", text: "В левом верхнем углу переключатель **Logical / Physical**. Logical — рабочая область, где вы строите топологию. Physical — показывает физические размеры/размещение (например, этаж здания с серверной). В CCNA физическая область используется время от времени." },
 
       { type: "h2", text: "Часть 2. Изучение LAN, WAN и Интернет" },
       { type: "p", text: "В учебной топологии — упрощённая сеть среднего бизнеса: несколько LAN (Central, Branch, Home Office), WAN-связи и облака Интранет/Интернет." },
       { type: "img", src: "assets/img/lab1/reports/lab1_1-img5.jpg", caption: "Центральная часть топологии Packet Tracer (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_1-img7.jpg", wide: true, caption: "Учебная топология целиком: LAN Central, Branch, Home Office, WAN и облака Интернет/Интранет (из отчёта)" },
       { type: "qa", q: "Категории промежуточных устройств в панели инструментов?", a: "**Routers, Switches, Hubs, Wireless Devices** — плюс в топологии промежуточными могут служить и End Devices (например, IP-телефон). Категория Connections (⚡) — сетевые носители." },
       { type: "qa", q: "Сколько оконечных устройств (не учитывая облака Интернет/Интранет)?", a: "**13 оконечных устройств**." },
       { type: "qa", q: "Сколько промежуточных устройств (не учитывая два облака)?", a: "**12 промежуточных устройств**." },
@@ -65,6 +69,8 @@ window.Site.labTasks.lab1 = [
         "Появится `Press RETURN to get started!` — нажмите Enter."
       ]},
       { type: "img", src: "assets/img/lab1/reports/lab1_2-img1.jpg", caption: "Окно настройки Terminal в Packet Tracer (9600 бод)" },
+      { type: "p", text: "Полезно сразу выполнить `show version` — в выводе видны модель (WS-C2960-24TT), версия IOS (12.2/15.0), объём памяти и MAC-адрес устройства:" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_2-img2.jpg", wide: true, caption: "Вывод show version: модель, версия ПО, память, серийный номер (из отчёта)" },
       { type: "qa", q: "Какое значение параметра в битах/с (скорость передачи) в Terminal?", a: "**9600** бод — стандартная скорость консольного порта Cisco." },
       { type: "qa", q: "Какое приглашение показано на экране?", a: "`Switch>` — **пользовательский режим (user EXEC)**. Приглашение имеет вид `ИМЯ>`, т.к. имя ещё не задано." },
       { type: "h3", text: "Контекстная справка «?»" },
@@ -203,11 +209,15 @@ window.Site.labTasks.lab1 = [
       ]},
       { type: "img", src: "assets/img/lab1/reports/lab1_3-img2.jpg", caption: "line console 0 / password letmein / login (из отчёта)" },
       { type: "img", src: "assets/img/lab1/reports/lab1_3-img3.jpg", caption: "enable password и enable secret (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_3-img1.jpg", caption: "Переход в config-режим и смена hostname (из отчёта)" },
       { type: "qa", q: "Для чего нужна команда `login`?", a: "**Активировать проверку установленного пароля** при подключении к консоли. Без `login` пароль спрашиваться не будет (частая ошибка)." },
       { type: "qa", q: "Что отображается при выводе `enable secret` в show run?", a: "`enable secret 5 $1$mERr$ILwq/b7kc.7X/ejA4Aosn0` — **5** означает тип шифрования MD5, пароль хранится в **зашифрованном виде**." },
       { type: "qa", q: "Почему `enable secret` показывается не в открытом виде?", a: "Потому что он **был зашифрован** (команда secret шифрует сразу при записи, тип 5 = MD5)." },
       { type: "qa", q: "Если добавить новые пароли после `service password-encryption` — будут ли они шифроваться?", a: "Если задавать через **`enable secret`** — да, они **сразу шифруются** (MD5, тип 5). Если через **`enable password`** или пароль линии — IOS **зашифрует их «на лету»** (типы 7) при вводе, пока сервис активен. В целом: `service password-encryption` шифрует все открытые пароли в конфигурации в слабый тип 7; для настоящей защиты предпочтительнее `enable secret`." },
       { type: "img", src: "assets/img/lab1/reports/lab1_3-img5.jpg", caption: "service password-encryption (из отчёта)" },
+      { type: "p", text: "После шифрования в `show running-config` открытые пароли отображаются с префиксом типа 7, а `enable secret` — с типом 5 (MD5):" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_3-img6.jpg", caption: "show run: enable secret 5 $1$… и enable password 7 08221D0A0A49 (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_3-img7.jpg", caption: "Зашифрованный пароль линии: password 7 082D495A041C0C19 + login (из отчёта)" },
       { type: "callout", kind: "warn", title: "enable secret vs enable password", text: "**Secret переопределяет password.** Если заданы оба, для входа в privileged EXEC потребуется вводить пароль **enable secret**. `enable password` устарел и хранит пароль слабее (или вообще открытым) — используйте только `enable secret`." },
 
       { type: "h2", text: "Часть 3. Баннер MOTD" },
@@ -217,6 +227,7 @@ window.Site.labTasks.lab1 = [
         { cmd: "S1(config)# exit" },
         { out: "%SYS-5-CONFIG_I: Configured from console by console" }
       ]},
+      { type: "img", src: "assets/img/lab1/reports/lab1_3-img4.jpg", caption: "Настройка баннера MOTD на S2: \"Authorized access only. …\" (из отчёта)" },
       { type: "qa", q: "В каких случаях отображается баннер MOTD?", a: "**При входе в систему** (до запроса пароля) — любой, кто подключается к консоли/telnet, увидит его первым." },
       { type: "qa", q: "Зачем настраивать баннер MOTD на всех коммутаторах?", a: "1) **Юридическая защита** — предупреждение о запрете несанкционированного доступа («prosecuted to the full extent of the law»). 2) **Полезная информация** для администратора (местоположение устройства, contact-данные). В задании 1.5 требуется баннер со словом **warning**." },
 
@@ -283,9 +294,12 @@ window.Site.labTasks.lab1 = [
         { cmd: "$ ip neigh show        # Linux: аналог arp -a" }
       ]},
       { type: "img", src: "assets/img/lab1/reports/wireshark-img1.jpg", caption: "arp -a: запись о шлюзе 46:e8:07:91:fc:57 (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/wireshark-img2.jpg", caption: "Linux: arp -a — строка _gateway (10.184.247.77) on wlan0 (из отчёта)" },
       { type: "qa", q: "Какая команда отобразит все записи ARP-кэша?", a: "**`arp -a`** (Windows). В Linux — **`ip neigh show`** или `arp -n`." },
       { type: "qa", q: "Как удалить ВСЕ записи ARP-кэша? (и почему `sudo arp -d *` в Linux не сработает)", a: "В **Windows**: **`arp -d *`** (с правами администратора). В **Linux** `arp -d *` **не поддерживает маску `*`** — удаляйте по одной (`arp -d <ip>`) или через `ip neigh flush all`." },
       { type: "qa", q: "Как удалить запись только для 192.168.1.11?", a: "**`arp -d 192.168.1.11`** — удаляет конкретную запись. После этого при следующем обращении хост снова выполнит ARP-обмен." },
+      { type: "img", src: "assets/img/lab1/reports/wireshark-img4.jpg", caption: "Linux: попытка arp -d с sudo возвращает SIOCDARP(dontpub): Network is unreachable — удаляйте без sudo или через ip neigh flush (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/wireshark-img3.jpg", wide: true, caption: "Очистка всех записей в цикле (Linux): для каждого IP из arp -n выполнить sudo arp -d (из отчёта)" },
 
       { type: "h2", text: "Часть 2. Анализ ARP в Wireshark" },
       { type: "ol", items: [
@@ -296,6 +310,7 @@ window.Site.labTasks.lab1 = [
         "Остановите захват и разберите пакеты: какой был первым? вторым?"
       ]},
       { type: "img", src: "assets/img/lab1/reports/wireshark-img5.jpg", caption: "Захват ARP в Wireshark (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/wireshark-img6.jpg", wide: true, caption: "Wireshark: панель пакетов ARP и разбор Ethernet II / Address Resolution Protocol в нижних панелях (из отчёта)" },
       { type: "qa", q: "Какой пакет ARP был первым?", a: "**ARP-запрос (Request)** — broadcast: «У кого IP-адрес 10.184.247.143? Скажите 10.184.247.77»." },
       { type: "table", head: ["Поле", "Значение (1-й пакет — Request)"], rows: [
         ["MAC-адрес отправителя", "`46:e8:07:91:fc:57`"],
@@ -315,6 +330,7 @@ window.Site.labTasks.lab1 = [
       { type: "h2", text: "Часть 3. Анализ задержек, вызванных ARP" },
       { type: "p", text: "Повторите захват: очистите ARP, выполните `ping` на шлюз и на ПК другого пользователя, затем фильтром `arp or icmp` изучите последовательность. Первый ICMP-пакет может подождать, пока ARP-обмен завершится — это и есть «компромисс производительности»: при отсутствии кэша ARP вынужден рассылать broadcast каждый раз, добавляя задержку и нагрузку на сеть." },
       { type: "img", src: "assets/img/lab1/reports/wireshark-img7.jpg", caption: "ping с замером времени отклика (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/wireshark-img8.jpg", caption: "Linux ping -c 4: 0% packet loss, min/avg/max = 129/153/183 ms — заметьте заметный min из-за ARP-обмена (из отчёта)" },
       { type: "h3", text: "Вопросы на закрепление (из методички)" },
       { type: "qa", q: "Как и когда удаляются статические записи ARP?", a: "**Удаляются вручную администратором** (командой `arp -d <ip>`). **Автоматически не удаляются** — в отличие от динамических записей, у которых есть TTL." },
       { type: "qa", q: "Зачем добавлять статические записи ARP в кэш?", a: "1) **Безопасность** — защита от ARP-спуфинга (злоумышленник не подменит MAC шлюза, если запись статическая). 2) **Исключение задержек** при обращении к критически важным узлам — не нужно ждать ARP-обмена." },
@@ -407,6 +423,8 @@ window.Site.labTasks.lab1 = [
       { type: "h2", text: "Часть 1. Физические характеристики" },
       { type: "qa", q: "Какие порты управления доступны на маршрутизаторе East (вкладка Physical)?", a: "**CONSOLE (RJ-45)**, **USB CONSOLE (Type-B)** и **AUX (RJ-45)** — служебные порты для настройки/восстановления устройства." },
       { type: "img", src: "assets/img/lab1/reports/lab1_5-img1.jpg", caption: "Панель маршрутизатора с портами (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_5-img2.jpg", wide: true, caption: "Маршрутизатор East: слева — блок питания, в центре — интерфейсы, справа — порты управления (выделены красным) (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_5-img6.jpg", wide: true, caption: "Задняя панель маршрутизатора: консольные и USB-порты, слоты расширения (из отчёта)" },
       { type: "qa", q: "Какие LAN/WAN-интерфейсы на East и сколько их?", a: "**Встроенные LAN**: 2 порта Gigabit Ethernet. **Модульные WAN-слоты**: 2 слота EHWIC (Enhanced High-Speed WAN Interface Card) — пока пустые." },
       { type: "cmd", title: "CLI маршрутизатора East", lines: [
         { cmd: "East> show ip interface brief" },
@@ -424,6 +442,7 @@ window.Site.labTasks.lab1 = [
       { type: "qa", q: "Сколько физических интерфейсов перечисляет show ip interface brief?", a: "**4 физических** (2× GigabitEthernet + 2× Serial). VLAN1 — **виртуальный**, существует только в ПО." },
       { type: "qa", q: "Пропускная способность GigabitEthernet 0/0 по умолчанию? Serial 0/0/0?", a: "**Gig0/0: 1 000 000 Kbit/s (1 Гбит/с)**. **Serial0/0/0: 1544 Kbit/s** (T1). На последовательных интерфейсах это значение использует **маршрутизация** для выбора лучшего пути — оно не всегда отражает реальную пропускную способность канала (её согласуют с провайдером)." },
       { type: "img", src: "assets/img/lab1/reports/lab1_5-img3.jpg", caption: "show ip interface brief маршрутизатора (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_5-img9.jpg", wide: true, caption: "show ip interface brief на West: 2 GigabitEthernet + 2 Serial (после установки модуля) + виртуальный Vlan1 (из отчёта)" },
       { type: "qa", q: "Сколько слотов расширения у East? А у Switch2/Switch3?", a: "**East: 2 свободных слота** (EHWIC). **Switch2 и Switch3: 10 портов всего, из них 5 свободных** для модулей." },
 
       { type: "h2", text: "Часть 2. Выбор модулей" },
@@ -437,6 +456,9 @@ window.Site.labTasks.lab1 = [
         "Проверьте через `show ip interface brief`, в какой слот попал модуль. **East: слот 0, субпорт 1** (Fa0/1/0 …). **Switch2/3: слот 5**."
       ]},
       { type: "img", src: "assets/img/lab1/reports/lab1_5-img4.jpg", caption: "Вкладка Physical коммутатора с модулями (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_5-img5.jpg", caption: "Отдельный модуль расширения крупным планом (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_5-img7.jpg", wide: true, caption: "Коммутатор: порты RJ-45 и свободные слоты под модули (из отчёта)" },
+      { type: "img", src: "assets/img/lab1/reports/lab1_5-img8.jpg", wide: true, caption: "Маршрутизатор после установки модуля расширения (из отчёта)" },
       { type: "callout", kind: "warn", title: "Удаление модуля", text: "Если вставили не тот модуль — перетащите его изображение вниз, на своё фото в правом нижнем углу, и отпустите кнопку мыши." },
 
       { type: "h2", text: "Часть 3. Подключение устройств (таблица)" },

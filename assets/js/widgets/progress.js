@@ -42,6 +42,7 @@ window.Progress = (function () {
       var k = id + ":" + idx;
       if (!state.cards[k]) { state.cards[k] = 1; save(); }
     },
+    isCardSeen: function (id, idx) { return !!state.cards[id + ":" + idx]; },
     cardsSeenCount: function (id) {
       var n = 0;
       for (var k in state.cards) if (state.cards[k] && k.indexOf(id + ":") === 0) n++;
@@ -55,10 +56,13 @@ window.Progress = (function () {
     },
     /* --- общий прогресс по лабораторной --- */
     labProgress: function (lab, extra) {
-      /* lab: {tasks:[{id}], quizId, quizTotal, flashId, flashTotal, checklists:[{id, items:[]}]} */
+      /* lab: {id, quizId, quizTotal, flashId, flashTotal, checklists}
+         Задания берём из Site.labTasks (единственный источник правды),
+         fallback — lab.tasks из meta.js. */
       var parts = [];
       var done = this.labTasksDone(lab.id);
-      parts.push([done, lab.tasks.length]);
+      var taskList = (window.Site && Site.labTasks && Site.labTasks[lab.id]) || lab.tasks || [];
+      parts.push([done, taskList.length]);
 
       if (lab.quizId) {
         var q = this.quizBest(lab.quizId);
@@ -89,6 +93,23 @@ window.Progress = (function () {
     reset: function () {
       state = { tasks: {}, quiz: {}, cards: {}, checks: {} };
       save();
+    },
+    /* --- экспорт / импорт (синхронизация ПК ↔ телефон) --- */
+    exportJSON: function () {
+      return JSON.stringify({ v: 1, at: Date.now(), state: state }, null, 2);
+    },
+    importJSON: function (json) {
+      var data = JSON.parse(json);
+      var st = data && data.state ? data.state : data;
+      if (!st || typeof st !== "object") throw new Error("bad format");
+      state = {
+        tasks: st.tasks || {},
+        quiz: st.quiz || {},
+        cards: st.cards || {},
+        checks: st.checks || {}
+      };
+      save();
+      return true;
     }
   };
 })();

@@ -8,24 +8,51 @@
       return wrap;
     }
 
-    var state = { i: 0, flipped: false };
+    var state = { i: 0, flipped: false, order: null, unseenOnly: false };
     if (title) wrap.appendChild(Renderer.el('<h3 class="blk-h3">' + Renderer.esc(title) + "</h3>"));
 
     var head = Renderer.el('<div class="flash-head"><span class="flash-count"></span><span class="flash-seen"></span></div>');
     var stage = Renderer.el('<div class="flash-stage"></div>');
+    var tools = Renderer.el('<div class="flash-tools"></div>');
     var nav = Renderer.el('<div class="flash-nav"></div>');
-    wrap.appendChild(head); wrap.appendChild(stage); wrap.appendChild(nav);
+    wrap.appendChild(head); wrap.appendChild(stage); wrap.appendChild(tools); wrap.appendChild(nav);
+
+    function fullOrder() {
+      return deck.map(function (_, i) { return i; });
+    }
+
+    function currentOrder() {
+      if (state.unseenOnly) {
+        var unseen = [];
+        deck.forEach(function (_, i) {
+          if (!Progress.isCardSeen(deckId, i)) unseen.push(i);
+        });
+        return unseen.length ? unseen : fullOrder();
+      }
+      return state.order || fullOrder();
+    }
+
+    function posInDeck() {
+      var ord = currentOrder();
+      return ord[state.i % Math.max(ord.length, 1)];
+    }
 
     function updHead() {
-      head.querySelector(".flash-count").textContent = "Карточка " + (state.i + 1) + " из " + deck.length;
+      var ord = currentOrder();
+      head.querySelector(".flash-count").textContent = "Карточка " + ((state.i % Math.max(ord.length, 1)) + 1) + " из " + ord.length +
+        (state.unseenOnly ? " (только новые)" : "");
       var seen = Progress.cardsSeenCount(deckId);
       head.querySelector(".flash-seen").textContent = "изучено: " + Math.min(seen, deck.length) + "/" + deck.length;
     }
 
     function show() {
       state.flipped = false;
-      Progress.cardSeen(deckId, state.i);
-      var c = deck[state.i];
+      var ord = currentOrder();
+      if (!ord.length) return;
+      if (state.i >= ord.length) state.i = 0;
+      var di = ord[state.i];
+      Progress.cardSeen(deckId, di);
+      var c = deck[di];
       stage.innerHTML = "";
       var card = Renderer.el(
         '<button class="flash-card"><div class="fc-inner">' +
@@ -39,11 +66,47 @@
       });
       stage.appendChild(card);
       updHead();
+      updTools();
     }
 
     function go(d) {
-      state.i = (state.i + d + deck.length) % deck.length;
+      var ord = currentOrder();
+      if (!ord.length) return;
+      state.i = (state.i + d + ord.length) % ord.length;
       show();
+    }
+
+    function shuffleArr(a) {
+      var r = a.slice();
+      for (var i = r.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = r[i]; r[i] = r[j]; r[j] = t;
+      }
+      return r;
+    }
+
+    function updTools() {
+      tools.innerHTML = "";
+      var sh = mkTool("🔀 Перемешать", function () {
+        state.order = shuffleArr(fullOrder());
+        state.unseenOnly = false;
+        state.i = 0;
+        show();
+      });
+      var un = mkTool(state.unseenOnly ? "📚 Показать все" : "🆕 Только новые", function () {
+        state.unseenOnly = !state.unseenOnly;
+        state.i = 0;
+        show();
+      });
+      if (state.unseenOnly) un.classList.add("active");
+      tools.appendChild(sh);
+      tools.appendChild(un);
+    }
+
+    function mkTool(label, fn) {
+      var b = Renderer.el('<button class="flash-tool">' + label + "</button>");
+      b.addEventListener("click", fn);
+      return b;
     }
 
     nav.appendChild(mkBtn("← Назад", function () { go(-1); }));

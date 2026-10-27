@@ -31,6 +31,50 @@
     applyTheme(cur === "dark" ? "light" : "dark");
   });
 
+  /* ---------- Экспорт / импорт / сброс прогресса ---------- */
+  var btnExport = document.getElementById("btnExport");
+  var btnImport = document.getElementById("btnImport");
+  var btnReset = document.getElementById("btnReset");
+  var importFile = document.getElementById("importFile");
+
+  if (btnExport) btnExport.addEventListener("click", function () {
+    var blob = new Blob([Progress.exportJSON()], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "cn-progress-" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  });
+
+  if (btnImport) btnImport.addEventListener("click", function () { importFile.click(); });
+  if (importFile) importFile.addEventListener("change", function () {
+    var f = importFile.files && importFile.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        Progress.importJSON(r.result);
+        buildNav();
+        onRoute();
+        updateTopbarProgress();
+        alert("Прогресс импортирован ✓");
+      } catch (e) {
+        alert("Не удалось импортировать файл прогресса");
+      }
+      importFile.value = "";
+    };
+    r.readAsText(f);
+  });
+
+  if (btnReset) btnReset.addEventListener("click", function () {
+    if (!confirm("Сбросить весь прогресс (задания, тесты, карточки, чек-листы)?")) return;
+    Progress.reset();
+    buildNav();
+    onRoute();
+    updateTopbarProgress();
+  });
+
   /* ---------- Боковое меню ---------- */
   function openSidebar() { sidebar.classList.add("open"); overlay.classList.add("show"); }
   function closeSidebar() { sidebar.classList.remove("open"); overlay.classList.remove("show"); }
@@ -233,21 +277,24 @@
       grid.appendChild(card("#/lab/" + m.id, m.icon, "Лабораторная " + m.num, m.desc, prog + "% пройдено", prog));
     });
 
-    grid.appendChild(card("#/questions", "❓", "Контрольные вопросы", "7 вопросов из методички с развёрнутыми ответами", ""));
+    var nQ = (Site.questions || []).length;
+    grid.appendChild(card("#/questions", "❓", "Контрольные вопросы", nQ + " вопросов из методички с развёрнутыми ответами", ""));
     grid.appendChild(card("#/cheatsheet", "⌨️", "Шпаргалка по IOS", "Команды Cisco IOS: режимы, show, настройка, ошибки", ""));
     content.appendChild(grid);
 
-    /* свежие задания */
-    content.appendChild(Renderer.el('<h2 class="blk-h2">Задания лабораторной 1</h2>'));
-    var lab1 = Site.labs.lab1;
-    var list = document.createElement("div");
-    list.className = "card-grid";
-    (Site.labTasks.lab1 || []).forEach(function (t) {
-      var done = Progress.isTaskDone("lab1", t.id);
-      var c = card("#/lab/lab1/task/" + t.id, done ? "✅" : "📄", "Задание " + t.num, t.title, done ? "выполнено" : "");
-      list.appendChild(c);
+    /* задания по всем лабораторным */
+    (Site.registry.labs || []).forEach(function (m) {
+      var tasks = (Site.labTasks || {})[m.id] || [];
+      if (!tasks.length) return;
+      content.appendChild(Renderer.el('<h2 class="blk-h2">Задания лабораторной ' + m.num + "</h2>"));
+      var list = document.createElement("div");
+      list.className = "card-grid";
+      tasks.forEach(function (t) {
+        var done = Progress.isTaskDone(m.id, t.id);
+        list.appendChild(card("#/lab/" + m.id + "/task/" + t.id, done ? "✅" : "📄", "Задание " + t.num, t.title, done ? "выполнено" : ""));
+      });
+      content.appendChild(list);
     });
-    content.appendChild(list);
   }
 
   function card(href, ico, title, desc, meta, prog) {
@@ -401,7 +448,8 @@
     document.title = "Контрольные вопросы";
     crumbs([{ text: "Главная", href: "#/" }, { text: "Контрольные вопросы" }]);
     content.appendChild(Renderer.el('<h1 class="page-title">❓ Контрольные вопросы</h1>'));
-    content.appendChild(Renderer.el('<p class="page-sub">7 вопросов из методички по лабораторной №1. Сначала попробуйте ответить сами, затем откройте ответ.</p>'));
+    var nQ = (Site.questions || []).length;
+    content.appendChild(Renderer.el('<p class="page-sub">' + nQ + " вопросов из методички по лабораторной №1. Сначала попробуйте ответить сами, затем откройте ответ.</p>"));
     renderBlocks((Site.questions || []).map(function (q) {
       return { type: "qa", q: q.q, a: q.a };
     }));
@@ -501,6 +549,21 @@
         else if (items[0]) { location.hash = items[0].getAttribute("href"); hide(); searchInput.blur(); }
       }
     });
+
+    /* горячие клавиши: Ctrl/Cmd+K или «/» — фокус в поиск */
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target && e.target.tagName || "").toLowerCase();
+      var typing = tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable);
+      if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      } else if (e.key === "/" && !typing && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+    });
   }
 
   /* ---------- Прокрутка к якорю ---------- */
@@ -510,13 +573,24 @@
       var el = document.getElementById(anchor);
       if (!el) return false;
       var y = el.getBoundingClientRect().top + window.pageYOffset - 70;
+      /* якорный прыжок — мгновенный: со smooth прыжок «плывёт» и повторные
+         вызовы не успевают за подгрузкой картинок */
+      var root = document.documentElement;
+      var prev = root.style.scrollBehavior;
+      root.style.scrollBehavior = "auto";
       window.scrollTo(0, y);
+      root.style.scrollBehavior = prev;
       return true;
     }
     /* первый прыжок сразу, повторы — на случай подгрузки картинок, сдвигающих раскладку */
     if (!jump()) return;
     setTimeout(jump, 300);
     setTimeout(jump, 900);
+    /* перепрыгиваем, как только каждая картинка выше якоря получит размеры */
+    content.querySelectorAll("img").forEach(function (img) {
+      if (!img.complete) img.addEventListener("load", jump, { once: true });
+    });
+    if (document.readyState !== "complete") window.addEventListener("load", jump, { once: true });
   }
 
   /* ---------- Запуск ---------- */
